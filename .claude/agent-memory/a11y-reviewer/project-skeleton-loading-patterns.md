@@ -7,6 +7,10 @@ metadata:
 
 Skeleton loading states in this project (e.g., `SummaryCard` in payments) use Tailwind `animate-pulse` with plain `div` blocks. These have no `aria-busy`, no `role`, and the placeholder blocks are not `aria-hidden`.
 
+Reference implementation (correct, as of 2026-06-13): `StatCard` in `earnings.page.tsx` — loading wrapper carries `aria-busy="true"` and `aria-label="{title} loading"`; inner skeleton divs carry `aria-hidden="true"`. Use this as the canonical pattern.
+
+Still missing the correct pattern as of 2026-06-13: `job-detail.page.tsx` loading skeleton — no `aria-busy`, no `aria-label`, placeholder blocks not `aria-hidden`.
+
 Pattern to enforce:
 - The card/container should carry `aria-busy="true"` and `aria-label="{title} loading"` during the skeleton state.
 - All skeleton `div` placeholder blocks should be `aria-hidden="true"` to avoid exposing empty, meaningless DOM nodes to AT.

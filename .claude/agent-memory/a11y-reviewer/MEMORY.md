@@ -5,3 +5,4 @@
 - [Icon Button Patterns](project-icon-button-patterns.md) — Decorative icons not aria-hidden in buttons; aria-pressed inconsistently applied to role-selector buttons
 - [Skeleton Loading Patterns](project-skeleton-loading-patterns.md) — animate-pulse cards missing aria-busy and aria-hidden on placeholder blocks
 - [Download Announcement Patterns](project-download-announcement-patterns.md) — Programmatic anchor click needs sr-only live region for download confirmation
+- [Inline Status Patterns](project-inline-status-patterns.md) — TrendBadge arrows need aria-hidden; BusynessStrip needs role=status; empty states need aria-live; live regions should not clear to empty

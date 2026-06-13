@@ -29,7 +29,7 @@ metadata:
 - **Hardcoded `#1F3A2F` inline in every Swal call**: Fixed — `SWAL_PRIMARY` is now imported from `@/shared/constants`.
 - **Mock data in `use-users.ts`**: Fixed — replaced with real `useQuery` calling `fetchUsers`.
 
-## Established Conventions
+## Established Conventions (updated 2026-06-13)
 
 - Indonesian-language UI strings (titles, labels, error messages, validation) — this is intentional, not a bug.
 - Mantine React Table v1 with `manualPagination: true` and server-side `rowCount` is the established table pattern.
@@ -43,3 +43,9 @@ metadata:
 - Error handling is inconsistent across API functions: `assignEditor` checks `res.ok` before `res.json()`, but `assignReporter`, `submitTranscript`, and `submitReview` call `res.json()` first — watch for this ordering bug in new API functions.
 - `assign-reporter-modal.tsx` uses inline error state; `assign-editor-modal.tsx` uses Swal for errors — these two modals are inconsistent on error display strategy. Future modals should pick one approach.
 - `useJobs` uses `refetchInterval: 5_000` with `staleTime: 0` — polling is intentional for live job status updates.
+- **`formatRupiah` helper is duplicated across feature pages**: `formatRupiah(n: number) { return 'Rp ' + n.toLocaleString('id-ID') }` appears verbatim in both `earnings.page.tsx` and `job-detail.page.tsx`. Extract to `@/shared/utils` and import.
+- **Hardcoded business-logic constants in render code**: The per-minute rate `2000` (IDR) appears in at least two places — `PaymentCell` in `earnings.page.tsx` and `estimatedPay` in `job-detail.page.tsx`. Must live in a named constant (e.g., `RATE_PER_MINUTE_IDR`) shared across features.
+- **Hardcoded monthly breakdown array index**: `monthly[5]` and `monthly[4]` used directly in `earnings.page.tsx` to pick "current" and "previous" months. Fragile when the server returns fewer items; use `.at(-1)` and `.at(-2)` instead.
+- **Duplicate React Query hooks calling the same endpoint**: `use-job-detail.ts` in `jobs/` uses queryKey `['job', jobId]` and `use-job-detail.ts` in `reporter-performance/` uses `['job-detail', jobId]` — both target `GET /jobs/:jobId`. These should be consolidated to a single hook in `jobs/` and re-exported or imported cross-feature.
+- **`job.location` accessed without null guard in `job-detail.page.tsx`**: `job.location?.toUpperCase()` is guarded but the broader `job` object from `useJobDetail(jobId)` is used immediately after the loading/error check without a null guard — if `useJobDetail` resolves to `undefined`, accessing `job.duration` crashes. Guard pattern: `if (!job) return null` after the loading/error branches.
+- **Missing `aria-busy` on loading skeletons**: The loading skeleton in `JobDetailPage` has no `aria-busy="true"` on the containing element, inconsistent with the project's established aria live-region pattern.
