@@ -35,11 +35,11 @@ export const router = createBrowserRouter([
       {
         path: 'admin/editors',
         lazy: async () => {
-          const { ReviewerPage } = await import('@/features/reviewer/reviewer.page')
+          const { EditorPage } = await import('@/features/editor/editor.page')
           return {
             element: (
               <RoleGuard allowedRoles={['admin']}>
-                <ReviewerPage />
+                <EditorPage />
               </RoleGuard>
             ),
           }

@@ -28,7 +28,7 @@ export function LoginPage() {
       })
       navigate(from, { replace: true })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Terjadi kesalahan. Coba lagi.')
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -37,7 +37,7 @@ export function LoginPage() {
   return (
     <div className="bg-white rounded-2xl border border-border-base shadow-sm p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">Masuk</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Sign In</h1>
         <p className="mt-1 text-sm text-text-secondary">VoiceScript</p>
       </div>
 
@@ -49,7 +49,7 @@ export function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="email@contoh.com"
+            placeholder="email@example.com"
             disabled={isLoading}
             className="w-full border border-border-base rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-bg-base disabled:opacity-50"
           />
@@ -79,14 +79,14 @@ export function LoginPage() {
           disabled={isLoading}
           className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Memuat...' : 'Masuk'}
+          {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
 
       <p className="mt-5 text-center text-sm text-text-secondary">
-        Belum punya akun?{' '}
+        Don't have an account?{' '}
         <Link to="/auth/register" className="text-primary font-medium hover:text-primary-hover hover:underline">
-          Daftar
+          Register
         </Link>
       </p>
     </div>

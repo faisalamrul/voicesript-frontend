@@ -5,5 +5,6 @@ export interface AppUser {
   name: string
   email: string
   role: UserRole
+  city: string
   created_at: string
 }

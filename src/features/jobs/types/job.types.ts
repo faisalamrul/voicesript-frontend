@@ -1,4 +1,4 @@
-export type JobStatus = 'NEW' | 'IN_PROGRESS' | 'SUBMITTED' | 'IN_REVIEW' | 'DONE' | 'REJECTED'
+export type JobStatus = 'NEW' | 'ASSIGNED' | 'TRANSCRIBED' | 'REVIEWED' | 'COMPLETED' | 'REJECTED'
 
 export interface Job {
   id: string
@@ -8,7 +8,9 @@ export interface Job {
   city: string
   status: JobStatus
   reporter_id: string | null
+  reporter_name: string | null
   editor_id: string | null
+  editor_name: string | null
   transcript_notes: string | null
   review_notes: string | null
   submitted_at: string | null

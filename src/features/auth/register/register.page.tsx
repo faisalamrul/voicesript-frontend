@@ -21,12 +21,12 @@ export function RegisterPage() {
     setError('')
 
     if (form.password !== form.confirmPassword) {
-      setError('Password dan konfirmasi password tidak cocok.')
+      setError('Passwords do not match.')
       return
     }
 
     if (form.password.length < 8) {
-      setError('Password minimal 8 karakter.')
+      setError('Password must be at least 8 characters.')
       return
     }
 
@@ -37,20 +37,20 @@ export function RegisterPage() {
   return (
     <div className="bg-white rounded-2xl border border-border-base shadow-sm p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">Daftar</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Register</h1>
         <p className="mt-1 text-sm text-text-secondary">VoiceScript</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">Nama</label>
+          <label className="block text-sm font-medium text-text-primary mb-1">Name</label>
           <input
             type="text"
             name="name"
             required
             value={form.name}
             onChange={handleChange}
-            placeholder="Nama lengkap"
+            placeholder="Full name"
             className="w-full border border-border-base rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-bg-base"
           />
         </div>
@@ -63,7 +63,7 @@ export function RegisterPage() {
             required
             value={form.email}
             onChange={handleChange}
-            placeholder="email@contoh.com"
+            placeholder="email@example.com"
             className="w-full border border-border-base rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-bg-base"
           />
         </div>
@@ -76,20 +76,20 @@ export function RegisterPage() {
             required
             value={form.password}
             onChange={handleChange}
-            placeholder="Min. 8 karakter"
+            placeholder="Min. 8 characters"
             className="w-full border border-border-base rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-bg-base"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-text-primary mb-1">Konfirmasi Password</label>
+          <label className="block text-sm font-medium text-text-primary mb-1">Confirm Password</label>
           <input
             type="password"
             name="confirmPassword"
             required
             value={form.confirmPassword}
             onChange={handleChange}
-            placeholder="Ulangi password"
+            placeholder="Repeat password"
             className="w-full border border-border-base rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-bg-base"
           />
         </div>
@@ -100,14 +100,14 @@ export function RegisterPage() {
           type="submit"
           className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors"
         >
-          Daftar
+          Register
         </button>
       </form>
 
       <p className="mt-5 text-center text-sm text-text-secondary">
-        Sudah punya akun?{' '}
+        Already have an account?{' '}
         <Link to="/auth/login" className="text-primary font-medium hover:text-primary-hover hover:underline">
-          Masuk
+          Sign In
         </Link>
       </p>
     </div>

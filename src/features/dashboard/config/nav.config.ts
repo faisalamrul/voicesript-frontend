@@ -21,7 +21,7 @@ const navConfig: Record<UserRole, NavSection[]> = {
   admin: [
     { to: '/', label: 'Jobs', icon: IconLayoutDashboard, end: true },
     { to: '/reporter', label: 'Reporter', icon: IconFileText, end: false },
-    { to: '/reviewer', label: 'Reviewer', icon: IconEye, end: false },
+    { to: '/editor', label: 'Editor', icon: IconEye, end: false },
     { to: '/users', label: 'Users', icon: IconUsersGroup, end: false },
     { to: '/record', label: 'Record', icon: IconMicrophone, end: false },
     { to: '/settings', label: 'Settings', icon: IconSettings, end: false },
@@ -39,9 +39,9 @@ const navConfig: Record<UserRole, NavSection[]> = {
     { to: '/record', label: 'Record', icon: IconMicrophone, end: false },
   ],
 
-  reviewer: [
+  editor: [
     { to: '/', label: 'Jobs', icon: IconLayoutDashboard, end: true },
-    { to: '/reviewer', label: 'Reviewer', icon: IconEye, end: false },
+    { to: '/editor', label: 'Editor', icon: IconEye, end: false },
     { to: '/record', label: 'Record', icon: IconMicrophone, end: false },
   ],
 }
