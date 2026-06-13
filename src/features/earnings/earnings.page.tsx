@@ -3,9 +3,13 @@ import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef, type MRT_P
 import { IconBriefcase, IconCalendarStats, IconCash, IconCircleCheck, IconClock, IconHourglass, IconInfoCircle, IconStopwatch, IconTrendingUp } from '@tabler/icons-react'
 import { Tooltip } from '@mantine/core'
 import {
-  ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer, Legend,
-} from 'recharts'
+  Chart as ChartJS,
+  CategoryScale, LinearScale, BarElement, LineElement,
+  PointElement, Tooltip as ChartTooltip, Legend,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ChartTooltip, Legend)
 import { useEarnings } from './hooks/use-earnings'
 import { formatRupiah } from '@/shared/utils/format'
 import { RATE_PER_MINUTE_IDR } from '@/shared/constants'
@@ -441,63 +445,86 @@ export function EarningsPage() {
             No monthly data available yet.
           </div>
         ) : (
-          <div className="h-[220px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart accessibilityLayer data={monthly} barSize={28} margin={{ top: 4, right: 40, left: 8, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-base)" vertical={false} />
-              <XAxis
-                dataKey="month_label"
-                tick={{ fontSize: 11, fill: 'var(--color-text-tertiary)' }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                yAxisId="earned"
-                orientation="left"
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
-                tick={{ fontSize: 11, fill: 'var(--color-text-tertiary)' }}
-                axisLine={false}
-                tickLine={false}
-                width={40}
-              />
-              <YAxis
-                yAxisId="minutes"
-                orientation="right"
-                tickFormatter={(v) => `${v} min`}
-                tick={{ fontSize: 11, fill: 'var(--color-text-tertiary)' }}
-                axisLine={false}
-                tickLine={false}
-                width={48}
-              />
-              <RechartsTooltip
-                formatter={(value: number, name: string) => {
-                  if (name === 'earned') return [`Rp ${value.toLocaleString('id-ID')}`, 'Earned']
-                  return [`${value} min`, 'Minutes']
-                }}
-                contentStyle={{
-                  fontSize: 12,
-                  borderRadius: 8,
-                  border: '1px solid var(--color-border-base)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                }}
-                cursor={{ fill: 'var(--color-bg-surface)' }}
-              />
-              <Legend
-                wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
-                formatter={(value) => value === 'earned' ? 'Earned (Rp)' : 'Minutes'}
-              />
-              <Bar yAxisId="earned" dataKey="earned" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
-              <Line
-                yAxisId="minutes"
-                type="monotone"
-                dataKey="minutes"
-                stroke="#14b8a6"
-                strokeWidth={2}
-                dot={{ r: 3, fill: '#14b8a6' }}
-                activeDot={{ r: 5 }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <div className="h-[220px]">
+            <Chart
+              type="bar"
+              data={{
+                labels: monthly.map((m) => m.month_label),
+                datasets: [
+                  {
+                    type: 'bar' as const,
+                    label: 'Earned (Rp)',
+                    data: monthly.map((m) => m.earned),
+                    backgroundColor: '#1F3A2F',
+                    borderRadius: 4,
+                    yAxisID: 'y',
+                  },
+                  {
+                    type: 'line' as const,
+                    label: 'Minutes',
+                    data: monthly.map((m) => m.minutes),
+                    borderColor: '#14b8a6',
+                    backgroundColor: '#14b8a6',
+                    tension: 0.3,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    yAxisID: 'y1',
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 11 }, boxWidth: 12, padding: 16 },
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: (ctx) => {
+                        if (ctx.dataset.yAxisID === 'y')
+                          return ` Rp ${(ctx.raw as number).toLocaleString('id-ID')}`
+                        return ` ${ctx.raw} min`
+                      },
+                    },
+                    padding: 10,
+                    cornerRadius: 8,
+                    titleFont: { size: 11 },
+                    bodyFont: { size: 12 },
+                  },
+                },
+                scales: {
+                  x: {
+                    ticks: { font: { size: 11 }, color: '#9ca3af' },
+                    grid: { display: false },
+                    border: { display: false },
+                  },
+                  y: {
+                    type: 'linear',
+                    position: 'left',
+                    ticks: {
+                      callback: (v) => `${((v as number) / 1000).toFixed(0)}k`,
+                      font: { size: 11 },
+                      color: '#9ca3af',
+                    },
+                    grid: { color: '#f3f4f6' },
+                    border: { display: false },
+                  },
+                  y1: {
+                    type: 'linear',
+                    position: 'right',
+                    ticks: {
+                      callback: (v) => `${v} min`,
+                      font: { size: 11 },
+                      color: '#9ca3af',
+                    },
+                    grid: { drawOnChartArea: false },
+                    border: { display: false },
+                  },
+                },
+              }}
+            />
           </div>
         )}
       </div>
