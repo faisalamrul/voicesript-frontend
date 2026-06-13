@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef, type MRT_PaginationState } from 'mantine-react-table'
-import { IconRefresh, IconMapPin, IconWifi, IconClock, IconCalendar, IconFileText, IconSearch } from '@tabler/icons-react'
+import { IconRefresh, IconMapPin, IconWifi, IconClock, IconCalendar, IconFileText, IconSearch, IconEye } from '@tabler/icons-react'
 import Swal from 'sweetalert2'
 import { useQueryClient } from '@tanstack/react-query'
 import { useJobs } from '../hooks/use-jobs'
@@ -259,6 +260,21 @@ export function JobsTable({ onViewTranscript }: JobsTableProps) {
             onViewTranscript={onViewTranscript}
             onJobCompleted={() => queryClient.invalidateQueries({ queryKey: ['jobs'] })}
           />
+        ),
+      } satisfies MRT_ColumnDef<Job>] : []),
+      ...(isReporter || isAdmin ? [{
+        id: 'details',
+        header: 'Details',
+        size: 120,
+        enableSorting: false,
+        Cell: ({ row }: { row: { original: Job } }) => (
+          <Link
+            to={`/jobs/${row.original.id}`}
+            className="inline-flex items-center gap-1.5 text-xs text-text-tertiary hover:text-primary transition-colors cursor-pointer"
+          >
+            <IconEye size={14} aria-hidden="true" />
+            View Details
+          </Link>
         ),
       } satisfies MRT_ColumnDef<Job>] : []),
     ],

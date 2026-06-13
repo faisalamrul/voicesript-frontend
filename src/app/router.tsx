@@ -18,6 +18,13 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/jobs" replace /> },
 
       { path: 'jobs', element: <JobsPage /> },
+      {
+        path: 'jobs/:jobId',
+        lazy: async () => {
+          const { JobDetailPage } = await import('@/features/jobs/job-detail.page')
+          return { element: <JobDetailPage /> }
+        },
+      },
 
       {
         path: 'admin/reporters',

@@ -95,3 +95,11 @@ export async function completeJob(jobId: string): Promise<Job> {
   if (!json.success) throw new Error(json.message || 'Failed to complete job.')
   return json.data.job
 }
+
+export async function fetchJobById(jobId: string): Promise<Job> {
+  const res = await apiClient(`/jobs/${jobId}`)
+  if (!res.ok) throw new Error(`Failed to load job. (${res.status})`)
+  const json = await res.json()
+  if (!json?.data?.job) throw new Error(`Unexpected response from /jobs/${jobId}`)
+  return json.data.job
+}

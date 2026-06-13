@@ -1,16 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
-import { IconArrowLeft, IconBriefcase, IconCheck, IconCircleCheck, IconEdit, IconFileText, IconUser } from '@tabler/icons-react'
+import { IconArrowLeft } from '@tabler/icons-react'
 import { useJobDetail } from './hooks/use-job-detail'
-import type { Job, JobStatus } from '@/features/jobs/types/job.types'
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString('en-GB', {
-    day: '2-digit', month: 'short', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
-  })
-}
+import { JobTimelineSteps } from '@/features/jobs/components/job-timeline'
+import type { JobStatus } from '@/features/jobs/types/job.types'
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
@@ -32,73 +24,6 @@ function StatusBadge({ status }: { status: JobStatus }) {
   )
 }
 
-// ─── Timeline ─────────────────────────────────────────────────────────────────
-
-type TimelineKey =
-  | 'created_at'
-  | 'reporter_assigned_at'
-  | 'submitted_at'
-  | 'editor_assigned_at'
-  | 'reviewed_at'
-  | 'completed_at'
-
-interface TimelineStep {
-  key: TimelineKey
-  title: string
-  icon: React.ElementType
-}
-
-const STEPS: TimelineStep[] = [
-  { key: 'created_at',           title: 'Job Created',          icon: IconBriefcase   },
-  { key: 'reporter_assigned_at', title: 'Reporter Assigned',    icon: IconUser        },
-  { key: 'submitted_at',         title: 'Transcript Submitted', icon: IconFileText    },
-  { key: 'editor_assigned_at',   title: 'Editor Assigned',      icon: IconEdit        },
-  { key: 'reviewed_at',          title: 'Reviewed',             icon: IconCheck       },
-  { key: 'completed_at',         title: 'Completed',            icon: IconCircleCheck },
-]
-
-function JobTimelineSteps({ job }: { job: Job }) {
-  return (
-    <div>
-      {STEPS.map((step, index) => {
-        const timestamp = job[step.key] as string | null
-        const isDone    = !!timestamp
-        const isLast    = index === STEPS.length - 1
-
-        return (
-          <div key={step.key} className="flex gap-5">
-            {/* Dot + line */}
-            <div className="flex flex-col items-center">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 border-2 transition-colors ${
-                isDone
-                  ? 'bg-primary border-primary text-white'
-                  : 'bg-white border-border-base text-text-tertiary'
-              }`}>
-                <step.icon size={15} aria-hidden="true" />
-              </div>
-              {!isLast && (
-                <div className={`w-0.5 flex-1 my-1 min-h-8 ${isDone ? 'bg-primary/25' : 'bg-border-base'}`} />
-              )}
-            </div>
-
-            {/* Content */}
-            <div className={`flex-1 pt-1.5 ${isLast ? '' : 'pb-8'}`}>
-              <p className={`font-semibold text-sm ${isDone ? 'text-text-primary' : 'text-text-tertiary'}`}>
-                {step.title}
-              </p>
-              {timestamp ? (
-                <p className="text-xs text-text-tertiary mt-0.5">{formatDateTime(timestamp)}</p>
-              ) : (
-                <p className="text-xs text-text-tertiary italic mt-0.5">Pending</p>
-              )}
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function JobTimelinePage() {
@@ -117,7 +42,7 @@ export function JobTimelinePage() {
         <div className="bg-white rounded-2xl border border-border-base p-6 space-y-6 animate-pulse">
           <div className="h-4 w-20 bg-gray-200 rounded" />
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex gap-5">
+            <div key={i} className="flex gap-5" aria-hidden="true">
               <div className="w-9 h-9 rounded-full bg-gray-200 flex-shrink-0" />
               <div className="flex-1 space-y-1.5 pt-1">
                 <div className="h-3.5 bg-gray-200 rounded w-32" />
