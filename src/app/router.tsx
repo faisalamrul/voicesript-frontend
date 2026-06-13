@@ -22,27 +22,43 @@ export const router = createBrowserRouter([
       {
         path: 'admin/reporters',
         lazy: async () => {
-          const { ReporterPage } = await import('@/features/reporter/reporter.page')
-          return {
-            element: (
-              <RoleGuard allowedRoles={['admin']}>
-                <ReporterPage />
-              </RoleGuard>
-            ),
-          }
+          const { ReporterListPage } = await import('@/features/reporter-performance/reporter-list.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><ReporterListPage /></RoleGuard> }
+        },
+      },
+      {
+        path: 'admin/reporters/:reporterId',
+        lazy: async () => {
+          const { ReporterDetailPage } = await import('@/features/reporter-performance/reporter-detail.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><ReporterDetailPage /></RoleGuard> }
+        },
+      },
+      {
+        path: 'admin/reporters/:reporterId/jobs/:jobId',
+        lazy: async () => {
+          const { JobTimelinePage } = await import('@/features/reporter-performance/job-timeline.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><JobTimelinePage /></RoleGuard> }
         },
       },
       {
         path: 'admin/editors',
         lazy: async () => {
-          const { EditorPage } = await import('@/features/editor/editor.page')
-          return {
-            element: (
-              <RoleGuard allowedRoles={['admin']}>
-                <EditorPage />
-              </RoleGuard>
-            ),
-          }
+          const { EditorListPage } = await import('@/features/editor-performance/editor-list.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><EditorListPage /></RoleGuard> }
+        },
+      },
+      {
+        path: 'admin/editors/:editorId',
+        lazy: async () => {
+          const { EditorDetailPage } = await import('@/features/editor-performance/editor-detail.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><EditorDetailPage /></RoleGuard> }
+        },
+      },
+      {
+        path: 'admin/editors/:editorId/jobs/:jobId',
+        lazy: async () => {
+          const { EditorJobTimelinePage } = await import('@/features/editor-performance/editor-job-timeline.page')
+          return { element: <RoleGuard allowedRoles={['admin']}><EditorJobTimelinePage /></RoleGuard> }
         },
       },
       {

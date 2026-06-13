@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef, type MRT_PaginationState } from 'mantine-react-table'
-import { IconUser, IconMail, IconCalendar, IconShield } from '@tabler/icons-react'
+import { IconMail, IconCalendar, IconShield } from '@tabler/icons-react'
 import { useUsers } from '../hooks/use-users'
 import type { AppUser } from '../types/user.types'
 import type { UserRole } from '@/shared/types'
@@ -44,12 +44,12 @@ export function UsersTable({ onEditRole, currentUserId }: UsersTableProps) {
         accessorKey: 'name',
         header: 'Name',
         size: 200,
-        Cell: ({ cell }) => (
+        Cell: ({ row }) => (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-primary-subtle flex items-center justify-center flex-shrink-0" aria-hidden="true">
-              <IconUser size={14} className="text-primary" />
+            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold flex-shrink-0" aria-hidden="true">
+              {row.original.name.charAt(0) || '?'}
             </div>
-            <span className="font-medium text-text-primary text-sm">{cell.getValue<string>()}</span>
+            <span className="font-medium text-text-primary text-sm">{row.original.name}</span>
           </div>
         ),
       },

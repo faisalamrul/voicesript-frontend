@@ -16,4 +16,7 @@ export interface Job {
   submitted_at: string | null
   reviewed_at: string | null
   created_at: string
+  reporter_assigned_at: string | null
+  editor_assigned_at: string | null
+  completed_at: string | null
 }

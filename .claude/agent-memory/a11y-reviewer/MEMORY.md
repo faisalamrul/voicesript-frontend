@@ -1,0 +1,7 @@
+- [SweetAlert2 Patterns](project-sweetalert2-patterns.md) — Loading dialogs lack live region/aria-busy; success toasts fire before async confirmation; Indonesian-language text
+- [Mantine React Table Patterns](project-mantine-react-table-patterns.md) — Alert banner children need role="alert"; progress bars need sr-only companion; manualPagination+rowCount is correct
+- [Form Label Patterns](project-form-label-patterns.md) — htmlFor/id pairs dropped when Label component removed; DurationInput segments need per-label not group label
+- [Modal Focus Patterns](project-modal-focus-patterns.md) — Confirmed systemic gap in all modals (jobs + users): no focus trap, Escape, initial focus, or restoration
+- [Icon Button Patterns](project-icon-button-patterns.md) — Decorative icons not aria-hidden in buttons; aria-pressed inconsistently applied to role-selector buttons
+- [Skeleton Loading Patterns](project-skeleton-loading-patterns.md) — animate-pulse cards missing aria-busy and aria-hidden on placeholder blocks
+- [Download Announcement Patterns](project-download-announcement-patterns.md) — Programmatic anchor click needs sr-only live region for download confirmation
