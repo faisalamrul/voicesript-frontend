@@ -29,6 +29,11 @@ metadata:
 - **Hardcoded `#1F3A2F` inline in every Swal call**: Fixed — `SWAL_PRIMARY` is now imported from `@/shared/constants`.
 - **Mock data in `use-users.ts`**: Fixed — replaced with real `useQuery` calling `fetchUsers`.
 
+- **`?? 'role-fallback'` in `useAuthStore` selector masking `enabled` guards**: In `use-earnings.ts`, `useAuthStore((s) => s.user?.role ?? 'reporter')` assigns a valid role when `user` is `null`, causing React Query's `enabled` guard to pass even for unauthenticated sessions. Pattern: always check `user != null` separately from `role` when using `enabled` to gate auth-dependent queries.
+- **Untyped role string interpolated into URL path**: `fetchEarnings` accepts a `UserRole` and interpolates it directly into `/${role}/earnings` with no validation at the API boundary. Pattern: narrow the parameter to an explicit union (`'reporter' | 'editor'`) local to the API function rather than accepting the broader `UserRole` type.
+- **Implicit fall-through on exhaustive `if`-chain for discriminated union**: `trendSub()` in `earnings.page.tsx` handles `'improving'`, `'stable'`, `'slowing'` explicitly but lets `'insufficient_data'` fall through to the default `return`. Prefer an explicit branch or TypeScript exhaustiveness check when converting a `Record<union, string>` to a function.
+- **Semantically misleading boolean name derived from rate type**: `isEditor` is derived from `rateInfo?.type === 'flat_per_job'` — the name suggests a role check but the predicate is a billing-model check. If rate types and roles diverge, this breaks silently. Prefer `isFlatRate` or derive from the role directly.
+
 ## Established Conventions (updated 2026-06-13)
 
 - Indonesian-language UI strings (titles, labels, error messages, validation) — this is intentional, not a bug.

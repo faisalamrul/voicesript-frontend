@@ -21,6 +21,7 @@ export interface EarningsJob {
   status: EarningsJobStatus
   duration: number
   reporter_payment: number | null
+  editor_payment: number | null
   assigned_at: string
   submitted_at: string | null
   reviewed_at: string | null
@@ -32,6 +33,11 @@ export interface EarningsPagination {
   page: number
   limit: number
   total_pages: number
+}
+
+export interface EarningsRateInfo {
+  type: 'per_minute' | 'flat_per_job'
+  amount: number
 }
 
 export interface EarningsTurnaroundStats {
@@ -55,6 +61,7 @@ export interface EarningsResponse {
   work_stats: EarningsWorkStats
   turnaround_stats?: EarningsTurnaroundStats
   monthly_breakdown?: EarningsMonthlyBreakdown[]
+  rate_info?: EarningsRateInfo
   jobs: EarningsJob[]
   pagination: EarningsPagination
 }

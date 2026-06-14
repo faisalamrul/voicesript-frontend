@@ -13,7 +13,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 import { useEarnings } from './hooks/use-earnings'
 import { formatRupiah } from '@/shared/utils/format'
 import { RATE_PER_MINUTE_IDR } from '@/shared/constants'
-import type { EarningsJob, EarningsJobStatus, EarningsPeriod, EarningsTurnaroundStats } from './types/earnings.types'
+import type { EarningsJob, EarningsJobStatus, EarningsPeriod, EarningsRateInfo, EarningsTurnaroundStats } from './types/earnings.types'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -123,11 +123,14 @@ function TrendBadge({ trend }: { trend: EarningsTurnaroundStats['trend'] }) {
   )
 }
 
-const TREND_SUB: Record<EarningsTurnaroundStats['trend'], string> = {
-  improving:        'Getting faster — keep it up',
-  stable:           'Consistent pace',
-  slowing:          'Pace slowing — check your timeline',
-  insufficient_data: 'Submit more jobs for trend data',
+function trendSub(trend: EarningsTurnaroundStats['trend'], rateType: EarningsRateInfo['type'] | undefined): string {
+  if (trend === 'improving')        return 'Getting faster — keep it up'
+  if (trend === 'stable')           return 'Consistent pace'
+  if (trend === 'slowing')          return 'Pace slowing — check your timeline'
+  if (trend === 'insufficient_data') return rateType === 'flat_per_job'
+    ? 'Submit more reviews for trend data'
+    : 'Submit more jobs for trend data'
+  return ''
 }
 
 const STATUS_STYLES: Record<EarningsJobStatus, { bg: string; text: string; label: string }> = {
@@ -147,11 +150,15 @@ function StatusBadge({ status }: { status: EarningsJobStatus }) {
   )
 }
 
-function PaymentCell({ job }: { job: EarningsJob }) {
-  if (job.status === 'COMPLETED' && job.reporter_payment !== null)
-    return <span className="font-medium text-gray-800 text-sm">{formatRupiah(job.reporter_payment)}</span>
+function PaymentCell({ job, rateInfo }: { job: EarningsJob; rateInfo?: EarningsRateInfo }) {
+  // exactly one of reporter_payment / editor_payment is non-null depending on the role
+  const payment = job.reporter_payment ?? job.editor_payment
+  if (job.status === 'COMPLETED' && payment !== null)
+    return <span className="font-medium text-gray-800 text-sm">{formatRupiah(payment)}</span>
   if (job.status === 'REVIEWED') {
-    const estimated = Math.floor(job.duration / 60) * RATE_PER_MINUTE_IDR
+    const estimated = rateInfo?.type === 'flat_per_job'
+      ? rateInfo.amount
+      : Math.floor(job.duration / 60) * RATE_PER_MINUTE_IDR
     return (
       <span className="text-gray-400 italic text-sm">
         {formatRupiah(estimated)}
@@ -159,7 +166,7 @@ function PaymentCell({ job }: { job: EarningsJob }) {
       </span>
     )
   }
-  return <span className="text-text-tertiary text-sm">—</span>
+  return <span className="text-text-tertiary text-sm" aria-label="Payment amount unavailable">—</span>
 }
 
 interface BusynessStripProps {
@@ -211,8 +218,10 @@ export function EarningsPage() {
   const summary    = data?.summary
   const workStats  = data?.work_stats
   const turnaround = data?.turnaround_stats
+  const rateInfo   = data?.rate_info
   const monthly    = data?.monthly_breakdown ?? []
   const jobs       = data?.jobs ?? []
+  const isFlatRate = rateInfo?.type === 'flat_per_job'
 
   const periodLabel = period === 'month' ? 'This Month' : period === 'last' ? 'Last Month' : 'All Time'
 
@@ -252,7 +261,9 @@ export function EarningsPage() {
       size: 120,
       Cell: ({ row }) => (
         <span className="text-sm text-text-secondary">
-          {computeTurnaround(row.original.assigned_at, row.original.submitted_at)}
+          {isFlatRate
+            ? computeTurnaround(row.original.assigned_at, row.original.reviewed_at)
+            : computeTurnaround(row.original.assigned_at, row.original.submitted_at)}
         </span>
       ),
     },
@@ -260,7 +271,7 @@ export function EarningsPage() {
       id: 'payment',
       header: 'Payment',
       size: 150,
-      Cell: ({ row }) => <PaymentCell job={row.original} />,
+      Cell: ({ row }) => <PaymentCell job={row.original} rateInfo={rateInfo} />,
     },
     {
       accessorKey: 'completed_at',
@@ -270,7 +281,7 @@ export function EarningsPage() {
         <span className="text-sm text-text-secondary">{formatDate(cell.getValue<string | null>())}</span>
       ),
     },
-  ], [])
+  ], [isFlatRate, rateInfo])
 
   const table = useMantineReactTable({
     columns,
@@ -365,7 +376,7 @@ export function EarningsPage() {
         <StatCard
           title="Total Minutes"
           value={(summary?.total_minutes ?? 0).toLocaleString('id-ID')}
-          sub="minutes transcribed"
+          sub={isFlatRate ? 'minutes reviewed' : 'minutes transcribed'}
           icon={IconClock}
           variant="blue"
           loading={isLoading}
@@ -401,14 +412,17 @@ export function EarningsPage() {
         <StatCard
           title="Avg Turnaround"
           value={turnaround ? `${turnaround.avg_hours.toFixed(1)} hrs` : '—'}
-          sub={turnaround ? TREND_SUB[turnaround.trend] : 'No data yet'}
+          sub={turnaround ? trendSub(turnaround.trend, rateInfo?.type) : 'No data yet'}
           icon={IconStopwatch}
           variant="indigo"
           loading={isLoading}
           badge={turnaround ? <TrendBadge trend={turnaround.trend} /> : undefined}
           titleExtra={
             <Tooltip
-              label="Time from job assigned to transcript submitted. Trend compares your 5 most recent jobs against the previous 10 jobs (10% threshold)."
+              label={isFlatRate
+                ? 'Time from job assigned to review submitted. Trend compares your 5 most recent reviews against the previous 10 (10% threshold).'
+                : 'Time from job assigned to transcript submitted. Trend compares your 5 most recent jobs against the previous 10 jobs (10% threshold).'
+              }
               multiline
               w={280}
               withArrow
@@ -438,7 +452,7 @@ export function EarningsPage() {
       <div className="bg-white rounded-2xl border border-border-base p-6">
         <div className="mb-5">
           <p className="text-sm font-semibold text-text-primary">Monthly Activity</p>
-          <p className="text-xs text-text-tertiary mt-0.5">Last 6 months — earnings vs minutes transcribed</p>
+          <p className="text-xs text-text-tertiary mt-0.5">Last 6 months — earnings vs {isFlatRate ? 'minutes reviewed' : 'minutes transcribed'}</p>
         </div>
         {monthly.length === 0 ? (
           <div role="status" className="flex items-center justify-center h-[220px] text-sm text-text-tertiary">
